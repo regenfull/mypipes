@@ -6,7 +6,8 @@ import (
 )
 
 type ComponentPipeInfo struct {
-	element *widgets.Paragraph
+	element  *widgets.Paragraph
+	pipeTree *ComponentPipesTree
 }
 
 func (c *ComponentPipeInfo) Init() error {
@@ -16,6 +17,10 @@ func (c *ComponentPipeInfo) Init() error {
 	width, height := ui.TerminalDimensions()
 	c.element.SetRect(width/4, 0, width, height-ComponentInfoBarHeight)
 	return nil
+}
+
+func (c *ComponentPipeInfo) SetPipesTree(p *ComponentPipesTree) {
+	c.pipeTree = p
 }
 
 func (c *ComponentPipeInfo) Update(e ui.Event) {

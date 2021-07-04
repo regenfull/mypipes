@@ -17,12 +17,11 @@ func main() {
 
 		e := <-event
 
-		if e.ID == "<C-c>" {
-			break
-		}
-
-		if e.ID == "q" {
-			break
+		switch e.ID {
+		case "<C-c>", "q":
+			return
+		case "n":
+			createPipe()
 		}
 
 		for _, c := range components {
