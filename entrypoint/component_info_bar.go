@@ -1,4 +1,4 @@
-package main
+package entrypoint
 
 import (
 	ui "github.com/gizak/termui/v3"
@@ -22,7 +22,7 @@ func (c *ComponentInfoBar) Init() error {
 	return nil
 }
 
-func (c *ComponentInfoBar) Update(e ui.Event) {
+func (c *ComponentInfoBar) Update() {
 	width, height := ui.TerminalDimensions()
 	c.element.SetRect(0, height-ComponentInfoBarHeight, width, height)
 }

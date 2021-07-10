@@ -1,4 +1,4 @@
-package main
+package entrypoint
 
 import (
 	ui "github.com/gizak/termui/v3"
@@ -23,7 +23,7 @@ func (c *ComponentPipeInfo) SetPipesTree(p *ComponentPipesTree) {
 	c.pipeTree = p
 }
 
-func (c *ComponentPipeInfo) Update(e ui.Event) {
+func (c *ComponentPipeInfo) Update() {
 	width, height := ui.TerminalDimensions()
 	c.element.SetRect(width/4, 0, width, height-ComponentInfoBarHeight)
 }

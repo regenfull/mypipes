@@ -5,28 +5,21 @@ import (
 )
 
 func main() {
+	var err error
+	if err = ui.Init(); err != nil {
+		panic(err)
+	}
+
 	defer ui.Close()
 
-	event := ui.PollEvents()
-	for {
-		ui.Clear()
+	application, err := setup()
+	if err != nil {
+		panic(err)
+	}
 
-		for _, c := range components {
-			ui.Render(c.GetUiElement())
-		}
-
-		e := <-event
-
-		switch e.ID {
-		case "<C-c>", "q":
-			return
-		case "n":
-			createPipe()
-		}
-
-		for _, c := range components {
-			c.Update(e)
-		}
+	err = application.Run()
+	if err != nil {
+		panic(err)
 	}
 
 }

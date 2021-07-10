@@ -1,16 +1,20 @@
-package main
+package models
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"time"
 	"unsafe"
 )
 
-func createPipe() error {
+type ExternalEditor struct {
+	editor string
+	args   []string
+}
+
+func (e ExternalEditor) Launch(text string) (string, error) {
 	var b = make([]byte, 0)
 	var str = *(*string)(unsafe.Pointer(&b))
 
@@ -23,19 +27,23 @@ func createPipe() error {
 	)
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	_, err = file.WriteString("Name=\nCommand=")
+	_, err = file.WriteString(text)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	file.Close()
 
-	err = launchExternalEditor(filename)
+	e.args = append(e.args, "filename")
+	cmd := exec.Command(e.editor, e.args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err = cmd.Run()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	file, err = os.OpenFile(
@@ -45,7 +53,7 @@ func createPipe() error {
 	)
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	var buffer = make([]byte, 128)
@@ -55,7 +63,7 @@ func createPipe() error {
 		n, err := file.Read(buffer)
 		if err != nil && err != io.EOF {
 			file.Close()
-			return err
+			return "", err
 		}
 
 		if err == io.EOF {
@@ -66,17 +74,11 @@ func createPipe() error {
 	}
 
 	file.Close()
-
 	os.Remove(filename)
 
-	var dataRecord PipeRecord
-	dataRecord.ParseFileds(string(data))
+	return string(data), nil
+}
 
-	pipes = append(pipes, dataRecord)
-
-	var encodeBuffer bytes.Buffer
-	var encoder = gob.NewEncoder(&encodeBuffer)
-	encoder.Encode(pipes)
-
-	return storage.Save(encodeBuffer)
+func NewExternalEditor() *ExternalEditor {
+	return &ExternalEditor{"vim", []string{}}
 }
