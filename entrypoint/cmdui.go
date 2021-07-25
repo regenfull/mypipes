@@ -14,6 +14,7 @@ type CmdUi struct {
 
 	commands []domain.Command
 	crud     domain.ICrudUseCase
+	control  domain.IControlUseCase
 
 	l *log.Logger
 }
@@ -25,12 +26,18 @@ func (c *CmdUi) Update(e ui.Event) {
 	case "k", "<Up>":
 		c.pipesTree.ScrollUp()
 	case "n", "N":
-		command, err := c.crud.Create()
+		_, err := c.crud.Create()
 		if err != nil {
-			c.l.Println("Cannot make a new cmd", err.Error())
 			break
 		}
-		c.commands = append(c.commands, *command)
+
+		c.commands, err = c.control.LoadAll()
+		if err != nil {
+			break
+		}
+
+		c.pipesTree.SetCommands(c.commands)
+
 	case "d", "D":
 	}
 }
@@ -43,7 +50,7 @@ func (c CmdUi) GetComponents() []IComponent {
 	}
 }
 
-func NewCmdUi(crud domain.ICrudUseCase, logger *log.Logger) (*CmdUi, error) {
+func NewCmdUi(crud domain.ICrudUseCase, control domain.IControlUseCase, logger *log.Logger) (*CmdUi, error) {
 	var err error
 	var infoBar = new(ComponentInfoBar)
 	var pipesTree = new(ComponentPipesTree)
@@ -61,12 +68,20 @@ func NewCmdUi(crud domain.ICrudUseCase, logger *log.Logger) (*CmdUi, error) {
 		return nil, err
 	}
 
+	commands, err := control.LoadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	pipesTree.SetCommands(commands)
+
 	return &CmdUi{
 		infoBar,
 		pipesTree,
 		pipeInfo,
-		[]domain.Command{},
+		commands,
 		crud,
+		control,
 		logger,
 	}, nil
 }

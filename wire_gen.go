@@ -25,7 +25,8 @@ func setup() (Application, error) {
 		return Application{}, err
 	}
 	iCrudUseCase := usecase.NewCrudUseCase(iStorage, iExternalEditor, logger)
-	cmdUi, err := entrypoint.NewCmdUi(iCrudUseCase, logger)
+	iControlUseCase := usecase.NewControlUseCase(iStorage, logger)
+	cmdUi, err := entrypoint.NewCmdUi(iCrudUseCase, iControlUseCase, logger)
 	if err != nil {
 		return Application{}, err
 	}

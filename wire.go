@@ -18,5 +18,6 @@ func setup() (Application, error) {
 		models.NewExternalEditor,
 		models.NewStorageSqlLite,
 		usecase.NewCrudUseCase,
+		usecase.NewControlUseCase,
 	))
 }

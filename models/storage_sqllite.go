@@ -31,8 +31,45 @@ func (StorageSqlLite) Get(id uint) (*domain.Command, error) {
 	return &domain.Command{}, nil
 }
 
-func (StorageSqlLite) GetAll() ([]domain.Command, error) {
-	return nil, nil
+func (s StorageSqlLite) GetAll() ([]domain.Command, error) {
+	var result []domain.Command
+
+	rows, err := s.db.Query(`
+		SELECT
+			rowid,
+			name,
+			command
+		FROM
+			commands
+		ORDER BY name ASC
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var id uint
+		var name string
+		var command string
+
+		err = rows.Scan(&id, &name, &command)
+		if err == sql.ErrNoRows {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, domain.Command{
+			Id:   id,
+			Name: name,
+			Cmd:  command,
+		})
+	}
+
+	return result, nil
 }
 
 func (StorageSqlLite) Delete(id uint) error {

@@ -5,3 +5,7 @@ type Command struct {
 	Name string
 	Cmd  string
 }
+
+type IControlUseCase interface {
+	LoadAll() ([]Command, error)
+}

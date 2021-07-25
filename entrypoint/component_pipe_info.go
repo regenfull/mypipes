@@ -15,7 +15,7 @@ func (c *ComponentPipeInfo) Init() error {
 	c.element.TextStyle = ui.NewStyle(ui.ColorYellow)
 
 	width, height := ui.TerminalDimensions()
-	c.element.SetRect(width/4, 0, width, height-ComponentInfoBarHeight)
+	c.element.SetRect(width/3, 0, width, height-ComponentInfoBarHeight)
 	return nil
 }
 
@@ -25,7 +25,7 @@ func (c *ComponentPipeInfo) SetPipesTree(p *ComponentPipesTree) {
 
 func (c *ComponentPipeInfo) Update() {
 	width, height := ui.TerminalDimensions()
-	c.element.SetRect(width/4, 0, width, height-ComponentInfoBarHeight)
+	c.element.SetRect(width/3, 0, width, height-ComponentInfoBarHeight)
 }
 
 func (c ComponentPipeInfo) GetUiElement() ui.Drawable {
