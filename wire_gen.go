@@ -6,13 +6,26 @@
 package main
 
 import (
+	"github.com/mega8bit/mypipes/domain"
 	"github.com/mega8bit/mypipes/entrypoint"
+	"github.com/mega8bit/mypipes/models"
+	"github.com/mega8bit/mypipes/usecase"
 )
 
 // Injectors from wire.go:
 
 func setup() (Application, error) {
-	cmdUi, err := entrypoint.NewCmdUi()
+	iStorage, err := models.NewStorageSqlLite()
+	if err != nil {
+		return Application{}, err
+	}
+	iExternalEditor := models.NewExternalEditor()
+	logger, err := domain.NewLogger()
+	if err != nil {
+		return Application{}, err
+	}
+	iCrudUseCase := usecase.NewCrudUseCase(iStorage, iExternalEditor, logger)
+	cmdUi, err := entrypoint.NewCmdUi(iCrudUseCase, logger)
 	if err != nil {
 		return Application{}, err
 	}

@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"time"
 	"unsafe"
+
+	"github.com/mega8bit/mypipes/domain"
 )
 
 type ExternalEditor struct {
@@ -37,7 +39,7 @@ func (e ExternalEditor) Launch(text string) (string, error) {
 
 	file.Close()
 
-	e.args = append(e.args, "filename")
+	e.args = append(e.args, filename)
 	cmd := exec.Command(e.editor, e.args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -79,6 +81,6 @@ func (e ExternalEditor) Launch(text string) (string, error) {
 	return string(data), nil
 }
 
-func NewExternalEditor() *ExternalEditor {
+func NewExternalEditor() domain.IExternalEditor {
 	return &ExternalEditor{"vim", []string{}}
 }
